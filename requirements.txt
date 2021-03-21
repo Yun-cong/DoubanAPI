@@ -1,0 +1,5 @@
+Flask==1.0.2
+waitress==2.0.0
+pymongo==3.11.0
+requests==2.21.0
+pyquery==1.4.0
