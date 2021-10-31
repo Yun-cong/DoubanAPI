@@ -273,3 +273,20 @@ def get_person_work():
         resp['code'] = -1
         resp['msg'] = "数据为空"
     return jsonify(resp)
+
+@douban.route('/book/wish', methods=["GET"])
+def get_book_wish():
+    resp = {'code': 200, 'msg': '获取成功', 'data': {}}
+    req = request.values
+    start = req['start'] if 'start' in req else 0
+    works, work_num =Spider().get_book_wish(int(start)*15)
+    if len(works) > 0:
+        temp = {
+            'works': works,
+            'total': work_num,
+        }
+        resp['data'] = temp
+    else:
+        resp['code'] = -1
+        resp['msg'] = "数据为空"
+    return jsonify(resp)

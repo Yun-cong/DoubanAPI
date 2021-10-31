@@ -2,6 +2,6 @@
 #pycharm
 __pycache__/*
 /.idea/*
-
+*/__pycache__
 
 

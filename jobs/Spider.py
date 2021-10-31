@@ -6,12 +6,15 @@ import json
 import random
 import requests
 from pyquery import PyQuery as pq
+import operator
 
 from application import app
 from common.Helper import *
+import math
 
 headers = app.config['HEADERS']
 domain = app.config['DOUBAN']
+uid = app.config['UID']
 
 ips = app.config['PROXIES']
 proxies = {}
@@ -585,3 +588,40 @@ class Spider(object):
             return m, total
         else:
             return [], 0
+
+    @staticmethod
+    def get_book_wish(start):
+        """
+         获取我想读的书
+        """
+        url = 'https://book.douban.com/people/%s/wish?start=%s&sort=time&rating=all&filter=all&mode=grid'%(uid,start)
+        req = requests.get(url, headers=headers, proxies=proxies, timeout=10)
+
+        m = []
+        if req.status_code == 200:
+            doc = pq(req.text)
+            count = doc('.subject-num').text()
+            total = replace_null(count[operator.indexOf(count,'/')+1:len(count)], ['(共', '条)'])
+            total=math.ceil(int(total.strip())/15)
+            items = doc('.interest-list > li').items()
+            for item in items:
+                title=pq(item)('.info > h2 > a').attr('title')
+                tags=pq(item)('.tags').text().replace('标签:','')
+                res = {
+                    'title': title,
+                    'tags':tags.strip()
+                }
+                m.append(res)
+            return m,total
+        else:
+            return [], 0
+    
+    @staticmethod
+    def get_book_detail(subject_id):
+        """
+         获取书详情
+        """
+        url='https://book.douban.com/subject/%s/'%subject_id
+        req = requests.get(url, headers=headers, proxies=proxies, timeout=10)
+
+        pass
